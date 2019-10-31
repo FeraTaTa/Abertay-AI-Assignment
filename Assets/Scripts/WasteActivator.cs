@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class WasteActivator : MonoBehaviour
 {
     WasteSelector[] nuclearWasteList;
+    public NavMeshSurface surface;
 
     [Range(1, 10)]
     public int ChanceOfActive = 5;
@@ -12,6 +14,7 @@ public class WasteActivator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        
         nuclearWasteList = GetComponentsInChildren<WasteSelector>(true);
         Debug.Log("hello");
         foreach (WasteSelector waste in nuclearWasteList) {
@@ -24,6 +27,9 @@ public class WasteActivator : MonoBehaviour
                 waste.transform.gameObject.SetActive(true);
             }
         }
+
+        //update navmesh
+        surface.BuildNavMesh();
     }
 
     // Update is called once per frame
