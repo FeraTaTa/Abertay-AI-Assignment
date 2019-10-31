@@ -16,12 +16,12 @@ public class WasteActivator : MonoBehaviour
     {
         
         nuclearWasteList = GetComponentsInChildren<WasteSelector>(true);
-        Debug.Log("hello");
+        
         foreach (WasteSelector waste in nuclearWasteList) {
             
             
             float presence = Random.Range(0f, 10f);
-            Debug.Log(presence);
+
             if (presence > ChanceOfActive)
             {
                 waste.transform.gameObject.SetActive(true);
