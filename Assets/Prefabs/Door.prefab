@@ -106,6 +106,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   doorMarked: 0
+  doorLocked: 0
+  roomsAttached: []
+  markedMaterial: {fileID: 2100000, guid: b98c03222084d744a83024241cbc3e99, type: 2}
+  lockedMaterial: {fileID: 2100000, guid: 70be9e6a00fc9d441b751a505311d8f7, type: 2}
 --- !u!54 &7951174360273915673
 Rigidbody:
   m_ObjectHideFlags: 0

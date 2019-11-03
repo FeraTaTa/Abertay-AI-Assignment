@@ -7,18 +7,16 @@ public class Door : MonoBehaviour
     public int doorMarked;
     public bool doorLocked;
     public List<Room> roomsAttached;
+    public Material markedMaterial;
+    public Material lockedMaterial;
+    Renderer doorRenderer;
 
     // Start is called before the first frame update
     void Start()
     {
         doorMarked = 0;
         doorLocked = false;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        doorRenderer = GetComponent<Renderer>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -27,6 +25,21 @@ public class Door : MonoBehaviour
         if (other.tag == "Room")
         {
             roomsAttached.Add(other.gameObject.GetComponent<Room>());
+        }
+    }
+
+    public void updateColour()
+    {
+        if (doorMarked == 1)
+        {
+            //set blue material
+            doorRenderer.material = markedMaterial;
+        }
+
+        if (doorLocked == true)
+        {
+            //set red material
+            doorRenderer.material = lockedMaterial;
         }
     }
 }

@@ -15,12 +15,6 @@ public class Room : MonoBehaviour
         hasBeenVisited = false;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         //on run-time create a list of doors that are attached to each room

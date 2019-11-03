@@ -46,6 +46,7 @@ public class AIControl : MonoBehaviour
                 {
                     currentDoor.doorLocked = true;
                 }
+                currentDoor.updateColour();
 
                 //                //TODO change this to choose doors that are marked 0 before doors marked 1
 
@@ -82,7 +83,7 @@ public class AIControl : MonoBehaviour
                 //                lastRoom = Current`
                 //once the agent enters a room get the transform of the room
                 currentRoom = other.transform;
-                //                //get list of doors attached to the current room
+                //get list of doors attached to the current room
                 immediateDoors = currentRoom.GetComponent<Room>().doorsAttached;
                 //                //select and go to the next unlocked door
                 //                //goToNextUnlockedDoor();
