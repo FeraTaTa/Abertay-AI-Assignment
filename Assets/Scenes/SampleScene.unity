@@ -3159,7 +3159,7 @@ PrefabInstance:
     - target: {fileID: 3162782202020908935, guid: 00e03b8f275e788478039932ff18ae1a,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 93.9
+      value: 94.2
       objectReference: {fileID: 0}
     - target: {fileID: 3162782202020908935, guid: 00e03b8f275e788478039932ff18ae1a,
         type: 3}
@@ -3169,7 +3169,7 @@ PrefabInstance:
     - target: {fileID: 3162782202020908935, guid: 00e03b8f275e788478039932ff18ae1a,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -54.8
+      value: -57.5
       objectReference: {fileID: 0}
     - target: {fileID: 3162782202020908935, guid: 00e03b8f275e788478039932ff18ae1a,
         type: 3}
@@ -3219,7 +3219,7 @@ PrefabInstance:
     - target: {fileID: 3162782202020908935, guid: 00e03b8f275e788478039932ff18ae1a,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 58.9
+      value: 66.97
       objectReference: {fileID: 0}
     - target: {fileID: 1321225771687904364, guid: 00e03b8f275e788478039932ff18ae1a,
         type: 3}
@@ -9657,6 +9657,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
+  agentScript: {fileID: 0}
 --- !u!4 &2093500675
 Transform:
   m_ObjectHideFlags: 0
@@ -10352,7 +10353,7 @@ PrefabInstance:
     - target: {fileID: 7054743269348979001, guid: 692f4b9b3b222da42bbc8b35edc625dc,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -72.7
+      value: -66.7
       objectReference: {fileID: 0}
     - target: {fileID: 7054743269348979001, guid: 692f4b9b3b222da42bbc8b35edc625dc,
         type: 3}

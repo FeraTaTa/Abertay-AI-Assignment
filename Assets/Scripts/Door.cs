@@ -4,16 +4,29 @@ using UnityEngine;
 
 public class Door : MonoBehaviour
 {
-    public bool doorMarked;
+    public int doorMarked;
+    public bool doorLocked;
+    public List<Room> roomsAttached;
+
     // Start is called before the first frame update
     void Start()
     {
-        doorMarked = false;
+        doorMarked = 0;
+        doorLocked = false;
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        //on run-time create a list of rooms that are attached to each door
+        if (other.tag == "Room")
+        {
+            roomsAttached.Add(other.gameObject.GetComponent<Room>());
+        }
     }
 }
