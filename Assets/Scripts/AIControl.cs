@@ -6,20 +6,47 @@ public class AIControl : MonoBehaviour
 {
     public bool NavMeshActive;
     public UnityEngine.AI.NavMeshAgent NavAgent;
-    public List<Door> immediateDoors;
-    public Transform previousRoomOnDoorEntry;
-    public Transform currentRoom;
+
+    List<Door> immediateDoors;
+    Transform previousRoomOnDoorEntry;
+    Transform currentRoom;
     Room lastBranch;
     bool setOnce;
+    bool goalHitRBS;
+    Transform targetRooom;
+    int goalAccuracy;
+
     //int roomNumTracker;
 
     // Start is called before the first frame update
     void Start()
     {
+        goalAccuracy = 5;
+        goalHitRBS = false;
         setOnce = true;
         NavMeshActive = false;
-        NavAgent = this.GetComponent<UnityEngine.AI.NavMeshAgent>();
+        NavAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         //roomNumTracker = 0;
+    }
+
+    private IEnumerator searchForRoom()
+    {
+        while (!goalHitRBS)
+        {
+            //goal reached if the agents position is within some accuracy to the target position
+            if ((targetRooom.position - transform.position).magnitude < goalAccuracy)
+            {
+                Debug.Log("Goal Reached");
+                goalHitRBS = true;
+            }
+            //if goal not reached and RBS is active search for goal
+            else if (!goalHitRBS)
+            {
+                Debug.Log("Search");
+                goToNextUnlockedDoor();
+                yield return new WaitForSeconds(.65f);
+            }
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -30,7 +57,7 @@ public class AIControl : MonoBehaviour
             //when the agent crosses a door
             if (other.tag == "Door")
             {
-                Debug.Log("Hit door: " + other.name);
+                //Debug.Log("Hit door: " + other.name);
                 previousRoomOnDoorEntry = currentRoom;
 
                 //get current door script
@@ -71,7 +98,7 @@ public class AIControl : MonoBehaviour
                         {
                             // StoreLastBranch
                             lastBranch = currentRoom.GetComponent<Room>();
-                            Debug.Log("Last branch set to " + lastBranch.name);
+                            //Debug.Log("Last branch set to " + lastBranch.name);
                         } else if (openDoorList.Count == 0)
                         {
                             // Is at a dead end
@@ -88,7 +115,7 @@ public class AIControl : MonoBehaviour
             //when the agent enters a room (esspecially first room)
             if (other.tag == "Room")
             {
-                Debug.Log("In room: " + other.name);
+                //Debug.Log("In room: " + other.name);
                 if (setOnce)
                 {
                     currentRoom = other.transform;
@@ -98,6 +125,7 @@ public class AIControl : MonoBehaviour
             }
         }
     }
+    
     //    void calculateRoomNumber(Room room)
     //    {
     //        //if the room number is 0 give it a new number
@@ -109,16 +137,11 @@ public class AIControl : MonoBehaviour
 
     public void agentSearch(Transform goal)
     {
-        if (false) //TODO make it within some range of goal ((this.transform.position - goal).magnitude < 5)
-        {
-            //goal reached
-            //some bool set 
-        }
-        else
-        {
-            //if not reached goal room select and go through the next unlocked door
-            goToNextUnlockedDoor();
-        }
+        Debug.Log("RBS Target is: " + goal.name);
+        goalHitRBS = false;
+        targetRooom = goal;
+        //start searching for the target room
+        StartCoroutine(searchForRoom());
     }
 
     private void goToNextUnlockedDoor()
