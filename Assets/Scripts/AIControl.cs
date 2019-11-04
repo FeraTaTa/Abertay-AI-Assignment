@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,6 +16,7 @@ public class AIControl : MonoBehaviour
     bool goalHitRBS;
     Transform targetRooom;
     int goalAccuracy;
+    Tween currentMovement;
 
     //int roomNumTracker;
 
@@ -42,9 +44,13 @@ public class AIControl : MonoBehaviour
             //if goal not reached and RBS is active search for goal
             else if (!goalHitRBS)
             {
-                Debug.Log("Search");
-                goToNextUnlockedDoor();
-                yield return new WaitForSeconds(.65f);
+                        Debug.Log("Search: " + (currentMovement==null));
+                if (currentMovement == null)
+                {
+                    goToNextUnlockedDoor();
+
+                }
+                yield return new WaitForSeconds(0.5f);
             }
         }
     }
@@ -80,7 +86,7 @@ public class AIControl : MonoBehaviour
                     if (currentDoor.roomsAttached[selector].transform != previousRoomOnDoorEntry)
                     {
                         currentRoom = currentDoor.roomsAttached[selector].transform;
-                        this.transform.position = currentRoom.position;
+                        onTransformMove(currentRoom.position);
                         immediateDoors = currentRoom.GetComponent<Room>().doorsAttached;
 
                         // Get all open doors in the new current room
@@ -103,7 +109,7 @@ public class AIControl : MonoBehaviour
                         {
                             // Is at a dead end
                             Debug.Log("On Dead end " + currentRoom.name);
-                            this.transform.position = lastBranch.transform.position;
+                            onTransformMove(lastBranch.transform.position);
                             currentRoom = lastBranch.transform;
                             immediateDoors = currentRoom.GetComponent<Room>().doorsAttached;
                         }
@@ -156,7 +162,7 @@ public class AIControl : MonoBehaviour
             //if this door has not not been travelled through yet, go to it
             if(currentDoor.doorMarked == 0)
             {
-                this.transform.position = (immediateDoors[selector].transform.position);
+                onTransformMove(immediateDoors[selector].transform.position);
                 break;
             }
             //if all immediate doors have been travelled through set flag
@@ -178,7 +184,7 @@ public class AIControl : MonoBehaviour
                 //if the selected door is not locked travel to it
                 if (!currentDoor.doorLocked)
                 {
-                    this.transform.position = (immediateDoors[selector].transform.position);
+                    onTransformMove(immediateDoors[selector].transform.position);
                     break;
                 }
                 //if selector makes it to the end of the door list without finding 
@@ -191,6 +197,41 @@ public class AIControl : MonoBehaviour
             }
         }
     }
+
+    void onTransformMove(Vector3 positionTarget)
+    {
+        Debug.Log("onTransformMove");
+        this.GetComponent<Collider>().enabled = false;
+
+        currentMovement = transform.DOMove(positionTarget, 0.65f).SetEase(Ease.InOutQuad).OnComplete(() => {
+            Debug.Log("complete tween");
+            this.GetComponent<Collider>().enabled = true;
+            currentMovement = null;
+        });
+
+    }
+
+
+
+    //int chooseRandomDoor(Room room)
+    //{
+    //    List<Door> doorList = room.doorsAttached;
+    //    int doorIndex;
+    //    bool doorChosen = false;
+    //    do
+    //    {
+    //        doorIndex = Random.Range(0, doorList.Count);
+    //        if (doorList[doorIndex].doorLocked == true)
+    //        {
+    //            doorList.RemoveAt(doorIndex);
+    //        }
+    //        else
+    //        {
+    //            doorChosen = true;
+    //            return doorIndex;
+    //        }
+    //    } while (!doorChosen);
+    //}
 }
 
 
