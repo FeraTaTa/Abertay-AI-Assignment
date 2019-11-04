@@ -2,36 +2,47 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class selectorAI : MonoBehaviour
 {
     AIControl agent;
+    bool isNavMeshActive;
     UnityEngine.AI.NavMeshAgent agentNavComponent;
     // Start is called before the first frame update
     void Start()
     {
+        updateScene();
+    }
+
+    public void loadScene(string sceneName)
+    {
+        isNavMeshActive = agent.NavMeshActive;
+        SceneManager.LoadScene(sceneName);
+        SceneManager.sceneLoaded += onSceneLoaded;
+        
+    }
+
+    void onSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        SceneManager.sceneLoaded -= onSceneLoaded;
+        updateScene();
+    }
+
+    void updateScene()
+    {
         agent = GameObject.FindGameObjectWithTag("AI").GetComponent<AIControl>();
-        agentNavComponent = GameObject.FindGameObjectWithTag("AI").GetComponent<UnityEngine.AI.NavMeshAgent>();
-        updateText();
-    }
+        Debug.Log("Current Scene is: " + SceneManager.GetActiveScene().name);
 
-    public void toggleActiveAI()
-    {
-        agent.NavMeshActive = !agent.NavMeshActive;
-        updateText();
-    }
-
-    void updateText()
-    {
-        if (agent.NavMeshActive)
+        if (SceneManager.GetActiveScene().name == "NavScene")
         {
-            this.gameObject.GetComponentInChildren<TextMeshProUGUI>().text = "NavMesh Selected";
-            agentNavComponent.enabled = true;
+            agent.NavMeshActive = true;
+
         }
-        else
+        else if(SceneManager.GetActiveScene().name == "RBSScene")
         {
-            this.gameObject.GetComponentInChildren<TextMeshProUGUI>().text = "Rule-Based Selected";
-            agentNavComponent.enabled = false;
+            agent.NavMeshActive = false;
+
         }
     }
 }
