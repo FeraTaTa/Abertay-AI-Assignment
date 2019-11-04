@@ -6,11 +6,12 @@ using TMPro;
 public class selectorAI : MonoBehaviour
 {
     AIControl agent;
-
+    UnityEngine.AI.NavMeshAgent agentNavComponent;
     // Start is called before the first frame update
     void Start()
     {
         agent = GameObject.FindGameObjectWithTag("AI").GetComponent<AIControl>();
+        agentNavComponent = GameObject.FindGameObjectWithTag("AI").GetComponent<UnityEngine.AI.NavMeshAgent>();
         updateText();
     }
 
@@ -25,10 +26,12 @@ public class selectorAI : MonoBehaviour
         if (agent.NavMeshActive)
         {
             this.gameObject.GetComponentInChildren<TextMeshProUGUI>().text = "NavMesh Selected";
+            agentNavComponent.enabled = true;
         }
         else
         {
             this.gameObject.GetComponentInChildren<TextMeshProUGUI>().text = "Rule-Based Selected";
+            agentNavComponent.enabled = false;
         }
     }
 }

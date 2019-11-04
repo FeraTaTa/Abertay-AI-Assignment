@@ -8,16 +8,15 @@ public class AIControl : MonoBehaviour
     public UnityEngine.AI.NavMeshAgent NavAgent;
     public List<Door> immediateDoors;
     public Transform previousRoomOnDoorEntry;
-    public Transform nextRoomOnDoorExit;
     public Transform currentRoom;
-    //    public Transform nextRoom;
-    //    public Vector3 currentDoorPosition;
-    //    Transform lastRoom;
-    //    int roomNumTracker;
+    Room lastBranch;
+    bool setOnce;
+    //int roomNumTracker;
 
     // Start is called before the first frame update
     void Start()
     {
+        setOnce = true;
         NavMeshActive = false;
         NavAgent = this.GetComponent<UnityEngine.AI.NavMeshAgent>();
         //roomNumTracker = 0;
@@ -33,8 +32,6 @@ public class AIControl : MonoBehaviour
             {
                 Debug.Log("Hit door: " + other.name);
                 previousRoomOnDoorEntry = currentRoom;
-                //                //Get current door position - needed?
-                //                currentDoorPosition = other.gameObject.transform.position;
 
                 //get current door script
                 Door currentDoor = other.GetComponent<Door>();
@@ -48,8 +45,6 @@ public class AIControl : MonoBehaviour
                 }
                 currentDoor.updateColour();
 
-                //                //TODO change this to choose doors that are marked 0 before doors marked 1
-
                 //to find the next room iterate over the two rooms that are attached to the current door
                 //since every door is only attached to 2 rooms do NOT go to the previous room
                 for (int selector = 0; selector < currentDoor.roomsAttached.Count; selector++)
@@ -57,22 +52,36 @@ public class AIControl : MonoBehaviour
                     //if the selected room is NOT the same as the last room then enter that room
                     if (currentDoor.roomsAttached[selector].transform != previousRoomOnDoorEntry)
                     {
-                        //                        lastRoom = currentRoom;
-                        nextRoomOnDoorExit = currentDoor.roomsAttached[selector].transform;
-                        this.transform.position = nextRoomOnDoorExit.position;
+                        currentRoom = currentDoor.roomsAttached[selector].transform;
+                        this.transform.position = currentRoom.position;
+                        immediateDoors = currentRoom.GetComponent<Room>().doorsAttached;
 
-                        //                        //calculateRoomNumber(currentRoom.GetComponent<Room>());
-                        //                        Debug.Log("Go to room case 1: " + currentRoom);
-                        //                        break;
+                        // Get all open doors in the new current room
+                        List<Door> openDoorList = new List<Door>();
+                        foreach (Door door in immediateDoors)
+                        {
+                            if (door.doorLocked != true)
+                            {
+                                // Add Open doors
+                                openDoorList.Add(door);
+                            }
+                        }
+
+                        if (openDoorList.Count > 2)
+                        {
+                            // StoreLastBranch
+                            lastBranch = currentRoom.GetComponent<Room>();
+                            Debug.Log("Last branch set to " + lastBranch.name);
+                        } else if (openDoorList.Count == 0)
+                        {
+                            // Is at a dead end
+                            Debug.Log("On Dead end " + currentRoom.name);
+                            this.transform.position = lastBranch.transform.position;
+                            currentRoom = lastBranch.transform;
+                            immediateDoors = currentRoom.GetComponent<Room>().doorsAttached;
+                        }
+                        break;
                     }
-                //                    else if (selector == currentDoor.roomsAttached.Count - 1)//???
-                //                    {
-                //                        lastRoom = currentRoom;
-                //                        currentRoom = currentDoor.roomsAttached[selector].transform;
-
-                //                        Debug.Log("Go to room case 2: " + currentRoom);
-                //                        break;
-                //                    }
                 }
             }
 
@@ -80,31 +89,30 @@ public class AIControl : MonoBehaviour
             if (other.tag == "Room")
             {
                 Debug.Log("In room: " + other.name);
-                //                lastRoom = Current`
-                //once the agent enters a room get the transform of the room
-                currentRoom = other.transform;
-                //get list of doors attached to the current room
-                immediateDoors = currentRoom.GetComponent<Room>().doorsAttached;
-                //                //select and go to the next unlocked door
-                //                //goToNextUnlockedDoor();
-                //            }
+                if (setOnce)
+                {
+                    currentRoom = other.transform;
+                    immediateDoors = currentRoom.GetComponent<Room>().doorsAttached;
+                    setOnce = false;
+                }
             }
         }
     }
-        //    void calculateRoomNumber(Room room)
-        //    {
-        //        //if the room number is 0 give it a new number
-        //        if (room.distanceFromStart == 0)
-        //        {
-        //            room.distanceFromStart = roomNumTracker;
-        //            roomNumTracker++;
-        //    }
+    //    void calculateRoomNumber(Room room)
+    //    {
+    //        //if the room number is 0 give it a new number
+    //        if (room.distanceFromStart == 0)
+    //        {
+    //            room.distanceFromStart = roomNumTracker;
+    //            roomNumTracker++;
+    //    }
 
-    public void agentSearch(Vector3 goal)
+    public void agentSearch(Transform goal)
     {
         if (false) //TODO make it within some range of goal ((this.transform.position - goal).magnitude < 5)
         {
             //goal reached
+            //some bool set 
         }
         else
         {
@@ -128,11 +136,12 @@ public class AIControl : MonoBehaviour
                 this.transform.position = (immediateDoors[selector].transform.position);
                 break;
             }
-            //if all doors have been travelled through set flag
+            //if all immediate doors have been travelled through set flag
             else if(selector == immediateDoors.Count - 1)
             {
-                Debug.Log("All door marked");
+                Debug.Log("All door marked in: "+currentRoom.name);
                 allDoorsMarked = true;
+                
             }
         }
         if (allDoorsMarked)

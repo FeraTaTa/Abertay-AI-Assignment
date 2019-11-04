@@ -6,15 +6,12 @@ public class AgentManager : MonoBehaviour
 {
     public GameObject agent;
     public AIControl agentScript;
-    
-    private float moveSpeed;
 
     // Start is called before the first frame update
     void Start()
     {
         agent = GameObject.FindGameObjectWithTag("AI");
         agentScript = agent.GetComponent<AIControl>();
-        moveSpeed = 5f;
     }
 
     // Update is called once per frame
@@ -39,7 +36,7 @@ public class AgentManager : MonoBehaviour
                 //Rule Based Function
                 if (!agentScript.NavMeshActive)
                 {
-                    agentScript.agentSearch(hit.point);
+                    agentScript.agentSearch(hit.transform);
                 }
             }
         }            
