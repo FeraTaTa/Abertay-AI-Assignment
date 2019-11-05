@@ -9,6 +9,7 @@ public class selectorAI : MonoBehaviour
     AIControl agent;
     bool isNavMeshActive;
     UnityEngine.AI.NavMeshAgent agentNavComponent;
+    TextMeshProUGUI sceneText;
     // Start is called before the first frame update
     void Start()
     {
@@ -33,15 +34,17 @@ public class selectorAI : MonoBehaviour
     {
         agent = GameObject.FindGameObjectWithTag("AI").GetComponent<AIControl>();
         Debug.Log("Current Scene is: " + SceneManager.GetActiveScene().name);
-
+        sceneText = GameObject.FindGameObjectWithTag("sceneText").GetComponent<TextMeshProUGUI>();
+        Debug.Log(sceneText);
         if (SceneManager.GetActiveScene().name == "NavScene")
         {
             agent.NavMeshActive = true;
-
+            sceneText.text = "Nav Scene";
         }
         else if(SceneManager.GetActiveScene().name == "RBSScene")
         {
             agent.NavMeshActive = false;
+            sceneText.text = "RBS Scene";
 
         }
     }
