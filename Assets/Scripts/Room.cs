@@ -7,12 +7,14 @@ public class Room : MonoBehaviour
     public int distanceFromStart;
     public bool hasBeenVisited;
     public List<Door> doorsAttached;
-
+    public Material vistedMaterial;
+    Renderer roomRenderer;
     // Start is called before the first frame update
     void Start()
     {
         distanceFromStart = 0;
         hasBeenVisited = false;
+        roomRenderer = GetComponent<Renderer>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -21,6 +23,11 @@ public class Room : MonoBehaviour
         if (other.tag == "Door")
         {
             doorsAttached.Add(other.gameObject.GetComponent<Door>());
+        }
+        if(other.tag == "AI")
+        {
+            hasBeenVisited = true;
+            roomRenderer.material = vistedMaterial;
         }
     }
 }

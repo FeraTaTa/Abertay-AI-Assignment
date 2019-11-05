@@ -105,6 +105,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a1ab20917601df4fa213e07effbc94d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  distanceFromStart: 0
+  hasBeenVisited: 0
+  doorsAttached: []
+  vistedMaterial: {fileID: 2100000, guid: ebdac02982ff73b459e10a03afb39cd6, type: 2}
 --- !u!54 &2398737103140521515
 Rigidbody:
   m_ObjectHideFlags: 0
