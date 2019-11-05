@@ -18,6 +18,8 @@ public class AIControl : MonoBehaviour
     int goalAccuracy;
     Tween currentMovement;
 
+    const int UNMARKDEDOOR = 0;
+    const int MARKDEDOOR = 1;
     //int roomNumTracker;
 
     // Start is called before the first frame update
@@ -44,7 +46,7 @@ public class AIControl : MonoBehaviour
             //if goal not reached and RBS is active search for goal
             else if (!goalHitRBS)
             {
-                        Debug.Log("Search: " + (currentMovement==null));
+                //Debug.Log("Search: " + (currentMovement==null));
                 if (currentMovement == null)
                 {
                     goToNextUnlockedDoor();
@@ -152,86 +154,94 @@ public class AIControl : MonoBehaviour
 
     private void goToNextUnlockedDoor()
     {
-        bool allDoorsMarked = false;
-
-        //iterate over the doors connected to the current room
-        for (int selector = 0; selector < immediateDoors.Count; selector++)
+        Door selectedDoor;
+        //search for unmarked door
+        selectedDoor = chooseRandomUnlockedDoor(immediateDoors, UNMARKDEDOOR);
+        //if an unmarked door exists go to it
+        if (selectedDoor != null)
         {
-            //get the script attached to the currently selected door
-            Door currentDoor = immediateDoors[selector].GetComponent<Door>();
-            //if this door has not not been travelled through yet, go to it
-            if(currentDoor.doorMarked == 0)
-            {
-                onTransformMove(immediateDoors[selector].transform.position);
-                break;
-            }
-            //if all immediate doors have been travelled through set flag
-            else if(selector == immediateDoors.Count - 1)
-            {
-                Debug.Log("All door marked in: "+currentRoom.name);
-                allDoorsMarked = true;
-                
-            }
+            Debug.Log("Chosen unmarked door: "+selectedDoor);
+            onTransformMove(selectedDoor.transform.position);
+            return;
         }
-        if (allDoorsMarked)
+        //if an unmarked door doesn't exist 
+        else if(selectedDoor == null)
         {
-            //if all doors are marked then the agent has taken every available path, 
-            //iterate over the doors again and take any available unlocked route
-            for (int selector = 0; selector < immediateDoors.Count; selector++)
+            //search for a marked door
+            selectedDoor = chooseRandomUnlockedDoor(immediateDoors, MARKDEDOOR);
+            //if a marked door exists go to it
+            if (selectedDoor != null)
             {
-                //get the script attached to the currently selected door
-                Door currentDoor = immediateDoors[selector].GetComponent<Door>();
-                //if the selected door is not locked travel to it
-                if (!currentDoor.doorLocked)
-                {
-                    onTransformMove(immediateDoors[selector].transform.position);
-                    break;
-                }
-                //if selector makes it to the end of the door list without finding 
-                //an unlocked door that means the agent is stuck
-                else if (selector == immediateDoors.Count - 1)
-                {
-                    Debug.Log("Hit dead end!!!!!!");
-                    break;
-                }
+                Debug.Log("Chosen marked door: " + selectedDoor);
+                onTransformMove(selectedDoor.transform.position);
+                return;
+            }
+            //if unmarked AND marked door do not exist then agent is at a dead end -> freak out
+            else
+            {
+                Debug.Log("Hit dead end!!!!!!");
+                return;
             }
         }
     }
 
     void onTransformMove(Vector3 positionTarget)
     {
-        Debug.Log("onTransformMove");
+        //Debug.Log("onTransformMove");
         this.GetComponent<Collider>().enabled = false;
 
         currentMovement = transform.DOMove(positionTarget, 0.65f).SetEase(Ease.InOutQuad).OnComplete(() => {
-            Debug.Log("complete tween");
+            //Debug.Log("complete tween");
             this.GetComponent<Collider>().enabled = true;
             currentMovement = null;
         });
 
     }
 
+    //randomly choose a valid unlocked door in param:room
+    //param:marked set to 0 to return an UNmarked door 
+    //param:marked set to 1 to return an marked door
+    Door chooseRandomUnlockedDoor(List<Door> doors, int marked)
+    {
+        //doorList = new List<Door>(doors);
+        List<Door> doorList = new List<Door>(doors);
+        int doorIndex;
+        bool doorChosen = false;
+        do
+        {
+            doorIndex = Random.Range(0, doorList.Count);
+            //break if searching an empty list
+            if (doorList.Count == 0)
+            {
+                Debug.Log("break, empty door list");
+                break;
+            }
+            //discard locked doors chosen
+            else if (doorList[doorIndex].doorLocked == true)
+            {
+                doorList.RemoveAt(doorIndex);
+            }
+            //in the case of choosing UNmarked doors, discard marked doors 
+            else if (marked == 0 && doorList[doorIndex].doorMarked == 1)
+            {
+                doorList.RemoveAt(doorIndex);
+            }
+            //in the case of choosing marked doors, discard UNmarked doors 
+            else if (marked == 1 && doorList[doorIndex].doorMarked == 0)
+            {
+                doorList.RemoveAt(doorIndex);
+            }
+            //accept the randomly generated doorIndex
+            else
+            {
+                doorChosen = true;
+                //Debug.Log(doorList[doorIndex]);
+                return doorList[doorIndex];
+            }
+        } while (!doorChosen);
 
-
-    //int chooseRandomDoor(Room room)
-    //{
-    //    List<Door> doorList = room.doorsAttached;
-    //    int doorIndex;
-    //    bool doorChosen = false;
-    //    do
-    //    {
-    //        doorIndex = Random.Range(0, doorList.Count);
-    //        if (doorList[doorIndex].doorLocked == true)
-    //        {
-    //            doorList.RemoveAt(doorIndex);
-    //        }
-    //        else
-    //        {
-    //            doorChosen = true;
-    //            return doorIndex;
-    //        }
-    //    } while (!doorChosen);
-    //}
+        return null;
+    }
 }
 
 
